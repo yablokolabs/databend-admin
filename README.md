@@ -86,3 +86,56 @@ See `examples/OUTPUT_SAMPLES.md` and `examples/USER_JOURNEYS.md` for fuller usag
 - reportable before mutable
 - safe admin workflows over dashboard theater
 - enterprise credibility over hype
+
+## AI and vectorized use cases
+Databend is also relevant for AI-oriented and vectorized data workflows, so `databend-admin` should eventually help platform teams govern those environments too.
+
+### Why this matters
+In enterprise settings, vector and AI workloads create additional operational questions:
+- who can access embedding or feature datasets
+- which teams can read or write AI-related tables
+- how warehouse usage changes under retrieval, inference, or hybrid analytics workloads
+- whether access boundaries are still appropriate when structured and vectorized workloads coexist
+
+### Example AI governance scenarios
+#### 1. Global automotive knowledge retrieval
+A large automotive company may store:
+- product manuals
+- dealer knowledge
+- aftersales support content
+- regional sales documents
+- model and brand metadata
+
+In a Databend environment supporting AI search or retrieval workflows, `databend-admin` can help teams reason about:
+- who can access those datasets
+- which roles can touch AI-related schemas
+- whether contractor or temporary accounts still have access
+- whether the same warehouses are being overloaded by reporting and AI-style workloads
+
+#### 2. Sales and brand intelligence with vectorized data
+For a Volvo-, BMW-, Lamborghini-, or Audi-scale analytics environment, teams may want to combine:
+- continent / country / city sales analytics
+- brand and model performance
+- semantic search over internal documents
+- AI copilots over operational data
+
+That increases the need for:
+- RBAC clarity
+- warehouse visibility
+- security reviewability
+- operational control over mixed SQL + AI workloads
+
+## Rendered AI-oriented examples
+
+### Example AI workload policy questions
+```text
+- Which roles can access embedding tables for dealer-support search?
+- Which warehouses are serving both finance dashboards and AI retrieval jobs?
+- Are contractor accounts still able to query AI-related schemas?
+- Do regional teams have the right brand-level data boundaries?
+```
+
+### Example enterprise positioning
+```text
+Databend-admin helps enterprise teams govern Databend environments that support both traditional analytics and emerging AI/vectorized workloads, with a focus on RBAC, security posture, and warehouse performance visibility.
+```
