@@ -145,9 +145,43 @@ Databend-admin helps enterprise teams govern Databend environments that support 
 ```markdown
 # AI Vector Demo
 
-| id | brand | city | similarity | topic |
-| --- | --- | --- | ---: | --- |
-| doc-eu-bmw-berlin-001 | bmw | berlin | 1.000 | dealer incentive policy |
-| doc-eu-volvo-stockholm-001 | volvo | stockholm | 0.986 | ev safety messaging |
-| doc-na-audi-newyork-001 | audi | new-york | 0.965 | dealer performance support |
+| id | region | country | brand | city | business unit | sensitivity | warehouse | similarity | topic |
+| --- | --- | --- | --- | --- | --- | --- | --- | ---: | --- |
+| doc-eu-de-berlin-bmw-incentives-q1 | europe | germany | bmw | berlin | dealer-operations | internal | global_analytics | 1.000 | Q1 dealer incentive escalation policy for premium sedan campaigns |
+| doc-eu-se-stockholm-volvo-ev-safety-playbook | europe | sweden | volvo | stockholm | aftersales-support | internal | dealer_support_ai | 0.991 | EV safety messaging and service-advisor escalation guidance |
+| doc-na-us-newyork-audi-dealer-support | north-america | united-states | audi | new-york | dealer-performance | internal | dealer_support_ai | 0.979 | Dealer performance support guide for regional sales and service follow-up |
+```
+
+### Rendered vector-demo JSON sample
+```json
+[
+  {
+    "id": "doc-eu-de-berlin-bmw-incentives-q1",
+    "region": "europe",
+    "country": "germany",
+    "city": "berlin",
+    "brand": "bmw",
+    "business_unit": "dealer-operations",
+    "document_type": "sales_policy",
+    "sensitivity": "internal",
+    "owner_team": "europe-sales-ops",
+    "warehouse": "global_analytics",
+    "topic": "Q1 dealer incentive escalation policy for premium sedan campaigns",
+    "similarity": 0.99964243
+  },
+  {
+    "id": "doc-eu-se-stockholm-volvo-ev-safety-playbook",
+    "region": "europe",
+    "country": "sweden",
+    "city": "stockholm",
+    "brand": "volvo",
+    "business_unit": "aftersales-support",
+    "document_type": "knowledge_base",
+    "sensitivity": "internal",
+    "owner_team": "nordics-service-ops",
+    "warehouse": "dealer_support_ai",
+    "topic": "EV safety messaging and service-advisor escalation guidance",
+    "similarity": 0.99145013
+  }
+]
 ```

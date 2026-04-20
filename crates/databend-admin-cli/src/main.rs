@@ -60,7 +60,7 @@ enum WarehouseCommand {
 #[derive(Subcommand)]
 enum AiCommand {
     VectorDemo {
-        #[arg(long, default_value = "0.90,0.10,0.40,0.20")]
+        #[arg(long, default_value = "0.92,0.10,0.42,0.20,0.74,0.19")]
         query: String,
         #[arg(long, default_value_t = 3)]
         top: usize,
@@ -230,8 +230,15 @@ fn render_ai_vector_demo(query: &str, top: usize, format: OutputFormat) -> Resul
         OutputFormat::Text => {
             for item in matches {
                 println!(
-                    "id={} brand={} city={} similarity={:.3} topic={}",
-                    item.id, item.brand, item.city, item.similarity, item.topic
+                    "id={} region={} country={} brand={} city={} warehouse={} similarity={:.3} topic={}",
+                    item.id,
+                    item.region,
+                    item.country,
+                    item.brand,
+                    item.city,
+                    item.warehouse,
+                    item.similarity,
+                    item.topic
                 );
             }
         }
@@ -246,12 +253,23 @@ fn render_ai_vector_demo(query: &str, top: usize, format: OutputFormat) -> Resul
 
 fn render_ai_markdown(items: &[VectorMatch]) {
     println!("# AI Vector Demo\n");
-    println!("| id | brand | city | similarity | topic |");
-    println!("| --- | --- | --- | ---: | --- |");
+    println!(
+        "| id | region | country | brand | city | business unit | sensitivity | warehouse | similarity | topic |"
+    );
+    println!("| --- | --- | --- | --- | --- | --- | --- | --- | ---: | --- |");
     for item in items {
         println!(
-            "| {} | {} | {} | {:.3} | {} |",
-            item.id, item.brand, item.city, item.similarity, item.topic
+            "| {} | {} | {} | {} | {} | {} | {} | {} | {:.3} | {} |",
+            item.id,
+            item.region,
+            item.country,
+            item.brand,
+            item.city,
+            item.business_unit,
+            item.sensitivity,
+            item.warehouse,
+            item.similarity,
+            item.topic
         );
     }
 }

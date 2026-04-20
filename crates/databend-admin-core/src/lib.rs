@@ -37,8 +37,14 @@ pub struct SecurityFinding {
 pub struct VectorDocument {
     pub id: String,
     pub region: String,
-    pub brand: String,
+    pub country: String,
     pub city: String,
+    pub brand: String,
+    pub business_unit: String,
+    pub document_type: String,
+    pub sensitivity: String,
+    pub owner_team: String,
+    pub warehouse: String,
     pub topic: String,
     pub embedding: Vec<f32>,
 }
@@ -46,8 +52,15 @@ pub struct VectorDocument {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct VectorMatch {
     pub id: String,
-    pub brand: String,
+    pub region: String,
+    pub country: String,
     pub city: String,
+    pub brand: String,
+    pub business_unit: String,
+    pub document_type: String,
+    pub sensitivity: String,
+    pub owner_team: String,
+    pub warehouse: String,
     pub topic: String,
     pub similarity: f32,
 }
@@ -161,36 +174,76 @@ pub fn run_security_audit(users: &[UserAccount], grants: &[RoleGrant]) -> Vec<Se
 pub fn sample_vector_documents() -> Vec<VectorDocument> {
     vec![
         VectorDocument {
-            id: "doc-eu-bmw-berlin-001".to_string(),
+            id: "doc-eu-de-berlin-bmw-incentives-q1".to_string(),
             region: "europe".to_string(),
-            brand: "bmw".to_string(),
+            country: "germany".to_string(),
             city: "berlin".to_string(),
-            topic: "dealer incentive policy".to_string(),
-            embedding: vec![0.92, 0.12, 0.41, 0.22],
+            brand: "bmw".to_string(),
+            business_unit: "dealer-operations".to_string(),
+            document_type: "sales_policy".to_string(),
+            sensitivity: "internal".to_string(),
+            owner_team: "europe-sales-ops".to_string(),
+            warehouse: "global_analytics".to_string(),
+            topic: "Q1 dealer incentive escalation policy for premium sedan campaigns".to_string(),
+            embedding: vec![0.93, 0.11, 0.44, 0.21, 0.72, 0.18],
         },
         VectorDocument {
-            id: "doc-eu-volvo-stockholm-001".to_string(),
+            id: "doc-eu-se-stockholm-volvo-ev-safety-playbook".to_string(),
             region: "europe".to_string(),
-            brand: "volvo".to_string(),
+            country: "sweden".to_string(),
             city: "stockholm".to_string(),
-            topic: "ev safety messaging".to_string(),
-            embedding: vec![0.84, 0.18, 0.36, 0.33],
+            brand: "volvo".to_string(),
+            business_unit: "aftersales-support".to_string(),
+            document_type: "knowledge_base".to_string(),
+            sensitivity: "internal".to_string(),
+            owner_team: "nordics-service-ops".to_string(),
+            warehouse: "dealer_support_ai".to_string(),
+            topic: "EV safety messaging and service-advisor escalation guidance".to_string(),
+            embedding: vec![0.87, 0.16, 0.38, 0.31, 0.69, 0.27],
         },
         VectorDocument {
-            id: "doc-eu-lamborghini-milan-001".to_string(),
+            id: "doc-eu-it-milan-lamborghini-launch-playbook".to_string(),
             region: "europe".to_string(),
-            brand: "lamborghini".to_string(),
+            country: "italy".to_string(),
             city: "milan".to_string(),
-            topic: "premium brand launch playbook".to_string(),
-            embedding: vec![0.79, 0.27, 0.51, 0.44],
+            brand: "lamborghini".to_string(),
+            business_unit: "brand-marketing".to_string(),
+            document_type: "launch_playbook".to_string(),
+            sensitivity: "confidential".to_string(),
+            owner_team: "emea-brand-strategy".to_string(),
+            warehouse: "executive_brand_intelligence".to_string(),
+            topic: "Premium launch coordination playbook for flagship performance campaigns"
+                .to_string(),
+            embedding: vec![0.81, 0.28, 0.56, 0.47, 0.78, 0.22],
         },
         VectorDocument {
-            id: "doc-na-audi-newyork-001".to_string(),
+            id: "doc-na-us-newyork-audi-dealer-support".to_string(),
             region: "north-america".to_string(),
-            brand: "audi".to_string(),
+            country: "united-states".to_string(),
             city: "new-york".to_string(),
-            topic: "dealer performance support".to_string(),
-            embedding: vec![0.71, 0.22, 0.49, 0.31],
+            brand: "audi".to_string(),
+            business_unit: "dealer-performance".to_string(),
+            document_type: "support_guide".to_string(),
+            sensitivity: "internal".to_string(),
+            owner_team: "na-retail-performance".to_string(),
+            warehouse: "dealer_support_ai".to_string(),
+            topic: "Dealer performance support guide for regional sales and service follow-up"
+                .to_string(),
+            embedding: vec![0.73, 0.20, 0.51, 0.29, 0.63, 0.24],
+        },
+        VectorDocument {
+            id: "doc-apac-jp-tokyo-volvo-warranty-qa".to_string(),
+            region: "apac".to_string(),
+            country: "japan".to_string(),
+            city: "tokyo".to_string(),
+            brand: "volvo".to_string(),
+            business_unit: "warranty-operations".to_string(),
+            document_type: "qa_manual".to_string(),
+            sensitivity: "restricted".to_string(),
+            owner_team: "apac-quality-and-service".to_string(),
+            warehouse: "warranty_ops".to_string(),
+            topic: "Warranty claim QA manual for EV component escalation cases".to_string(),
+            embedding: vec![0.76, 0.14, 0.35, 0.40, 0.66, 0.30],
         },
     ]
 }
@@ -204,8 +257,15 @@ pub fn vector_similarity_search(
         .iter()
         .map(|doc| VectorMatch {
             id: doc.id.clone(),
-            brand: doc.brand.clone(),
+            region: doc.region.clone(),
+            country: doc.country.clone(),
             city: doc.city.clone(),
+            brand: doc.brand.clone(),
+            business_unit: doc.business_unit.clone(),
+            document_type: doc.document_type.clone(),
+            sensitivity: doc.sensitivity.clone(),
+            owner_team: doc.owner_team.clone(),
+            warehouse: doc.warehouse.clone(),
             topic: doc.topic.clone(),
             similarity: cosine_similarity(query, &doc.embedding),
         })
@@ -282,8 +342,8 @@ mod tests {
     #[test]
     fn vector_search_returns_matches() {
         let docs = sample_vector_documents();
-        let matches = vector_similarity_search(&[0.9, 0.1, 0.4, 0.2], &docs, 2);
-        assert_eq!(matches.len(), 2);
+        let matches = vector_similarity_search(&[0.92, 0.10, 0.42, 0.20, 0.74, 0.19], &docs, 3);
+        assert_eq!(matches.len(), 3);
         assert!(matches[0].similarity >= matches[1].similarity);
     }
 }
