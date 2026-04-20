@@ -83,6 +83,23 @@ Low: review contractor account contractor_brand_review - Contractor-style accoun
 
 See `examples/OUTPUT_SAMPLES.md` and `examples/USER_JOURNEYS.md` for fuller usage and enterprise framing.
 
+## Live Databend dashboard demo
+A live Databend dashboard was also created on top of the sample automotive governance dataset:
+- <https://app.databend.com/orgf2fer6v/dashboard/128?page=1&pageSize=50>
+
+Current dashboard widgets include:
+- document count by brand table
+- document count by business unit
+- enterprise sample records table
+- document count by warehouse
+- document count by sensitivity
+- document count by region
+
+This makes the repo more than just a CLI concept. It now has:
+- seeded Databend sample tables
+- a Rust admin/governance toolkit
+- and a live dashboard layer showing how the data can be monitored in practice
+
 ## Principles
 - Rust-first and automation-friendly
 - reportable before mutable
