@@ -6,7 +6,7 @@ Rust-native admin and governance toolkit for [Databend](https://www.databend.com
 `databend-admin` helps data teams inspect and manage [Databend](https://www.databend.com/) users, roles, grants, security posture, and warehouse/query health from a practical Rust-based control layer.
 
 ## Why this exists
-Many enterprise data teams end up managing Databend environments through ad hoc SQL, tribal knowledge, and manual review. This project aims to make common administration workflows more consistent, auditable, and automatable.
+Many enterprise data teams, whether they are using Databend, Snowflake, or other warehouse platforms, end up managing access, security posture, and warehouse operations through ad hoc SQL, tribal knowledge, and manual review. `databend-admin` is meant to show what a more consistent, auditable, and automatable admin layer can look like for modern data platforms, with Databend as the initial implementation target.
 
 ## Initial scope
 - live Databend-backed RBAC inventory for users, roles, and grants
