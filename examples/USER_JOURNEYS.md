@@ -20,6 +20,7 @@ The platform team can use `databend-admin` to:
 - generate repeatable RBAC snapshots for security review
 - document warehouse-level access for each department
 - create a baseline for future policy drift checks
+- inspect live-style automotive knowledge tables such as `cars_companies.bmw_vector_docs` and `cars_companies.lamborghini_vector_docs`
 
 ### Example flow
 #### Step 1: take an RBAC inventory snapshot

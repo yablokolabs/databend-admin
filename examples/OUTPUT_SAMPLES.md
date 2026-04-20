@@ -17,8 +17,8 @@ They are meant to make the product feel tangible even before every live connecto
 ## Grants
 | role | object | privilege |
 | --- | --- | --- |
-| sales_analyst | database:vehicle_sales_eu | SELECT |
-| finance_reader | database:group_finance | SELECT |
+| sales_analyst | database:cars_companies | SELECT |
+| finance_reader | table:cars_companies.bmw_vector_docs | SELECT |
 | admin | warehouse:global_analytics | ALL |
 ```
 
@@ -51,8 +51,9 @@ Low: review contractor account contractor_brand_review - Contractor-style accoun
 | warehouse | size | running | auto suspend secs | auto resume |
 | --- | --- | --- | ---: | --- |
 | global_analytics | large | true | 300 | true |
-| finance_reporting | medium | true | 120 | true |
-| adhoc_exploration | small | false | 60 | true |
+| dealer_support_ai | medium | true | 120 | true |
+| executive_brand_intelligence | medium | true | 180 | true |
+| warranty_ops | small | false | 60 | true |
 ```
 
 ## Enterprise framing example
@@ -68,3 +69,12 @@ In a Volvo-, BMW-, or Lamborghini-scale scenario, these outputs help platform an
 - which roles are too broad
 - whether contractor-style accounts still need access
 - which warehouses are active and how they are configured
+
+
+## Sample live-style table inventory
+```text
+cars_companies.lamborghini_vector_docs
+cars_companies.bmw_vector_docs
+cars_companies.volvo_vector_docs
+cars_companies.audi_vector_docs
+```

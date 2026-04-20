@@ -58,8 +58,8 @@ See `examples/USER_JOURNEYS.md` for fuller onboarding and enterprise usage examp
 ## Grants
 | role | object | privilege |
 | --- | --- | --- |
-| sales_analyst | database:vehicle_sales_eu | SELECT |
-| finance_reader | database:group_finance | SELECT |
+| sales_analyst | database:cars_companies | SELECT |
+| finance_reader | table:cars_companies.bmw_vector_docs | SELECT |
 | admin | warehouse:global_analytics | ALL |
 ```
 
@@ -76,8 +76,9 @@ Low: review contractor account contractor_brand_review - Contractor-style accoun
 | warehouse | size | running | auto suspend secs | auto resume |
 | --- | --- | --- | ---: | --- |
 | global_analytics | large | true | 300 | true |
-| finance_reporting | medium | true | 120 | true |
-| adhoc_exploration | small | false | 60 | true |
+| dealer_support_ai | medium | true | 120 | true |
+| executive_brand_intelligence | medium | true | 180 | true |
+| warranty_ops | small | false | 60 | true |
 ```
 
 See `examples/OUTPUT_SAMPLES.md` and `examples/USER_JOURNEYS.md` for fuller usage and enterprise framing.
@@ -99,6 +100,12 @@ In enterprise settings, vector and AI workloads create additional operational qu
 - whether access boundaries are still appropriate when structured and vectorized workloads coexist
 
 ### Example AI governance scenarios
+These can now map directly to sample tables under `cars_companies`, including:
+- `bmw_vector_docs`
+- `volvo_vector_docs`
+- `audi_vector_docs`
+- `lamborghini_vector_docs`
+
 #### 1. Global automotive knowledge retrieval
 A large automotive company may store:
 - product manuals
