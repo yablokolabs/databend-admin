@@ -29,6 +29,7 @@ databend-admin warehouse health --format markdown
 - `databend-admin rbac snapshot`
 - `databend-admin security audit`
 - `databend-admin warehouse health`
+- `databend-admin ai vector-demo`
 
 ## Enterprise user journey example
 A realistic target user is a large European automotive or industrial company onboarding multiple teams into Databend for manufacturing analytics, supply chain reporting, finance, and forecasting.
@@ -138,4 +139,15 @@ That increases the need for:
 ### Example enterprise positioning
 ```text
 Databend-admin helps enterprise teams govern Databend environments that support both traditional analytics and emerging AI/vectorized workloads, with a focus on RBAC, security posture, and warehouse performance visibility.
+```
+
+### Rendered vector-demo output
+```markdown
+# AI Vector Demo
+
+| id | brand | city | similarity | topic |
+| --- | --- | --- | ---: | --- |
+| doc-eu-bmw-berlin-001 | bmw | berlin | 1.000 | dealer incentive policy |
+| doc-eu-volvo-stockholm-001 | volvo | stockholm | 0.986 | ev safety messaging |
+| doc-na-audi-newyork-001 | audi | new-york | 0.965 | dealer performance support |
 ```

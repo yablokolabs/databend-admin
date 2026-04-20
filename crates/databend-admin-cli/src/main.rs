@@ -1,7 +1,8 @@
 use clap::{Parser, Subcommand, ValueEnum};
 use databend_admin_core::{
-    AdminError, RoleGrant, SecurityFinding, UserAccount, WarehouseHealth, load_grants, load_users,
-    load_warehouses, run_security_audit,
+    AdminError, RoleGrant, SecurityFinding, UserAccount, VectorMatch, WarehouseHealth, load_grants,
+    load_users, load_warehouses, run_security_audit, sample_vector_documents,
+    vector_similarity_search,
 };
 
 #[derive(Parser)]
@@ -25,6 +26,10 @@ enum Commands {
     Warehouse {
         #[command(subcommand)]
         command: WarehouseCommand,
+    },
+    Ai {
+        #[command(subcommand)]
+        command: AiCommand,
     },
 }
 
@@ -52,6 +57,18 @@ enum WarehouseCommand {
     },
 }
 
+#[derive(Subcommand)]
+enum AiCommand {
+    VectorDemo {
+        #[arg(long, default_value = "0.90,0.10,0.40,0.20")]
+        query: String,
+        #[arg(long, default_value_t = 3)]
+        top: usize,
+        #[arg(long, value_enum, default_value_t = OutputFormat::Text)]
+        format: OutputFormat,
+    },
+}
+
 #[derive(Copy, Clone, Debug, Eq, PartialEq, ValueEnum)]
 enum OutputFormat {
     Text,
@@ -72,6 +89,11 @@ async fn main() -> Result<(), AdminError> {
         Commands::Warehouse { command } => match command {
             WarehouseCommand::Health { format } => render_warehouse(format).await?,
         },
+        Commands::Ai { command } => match command {
+            AiCommand::VectorDemo { query, top, format } => {
+                render_ai_vector_demo(&query, top, format)?
+            }
+        },
     }
     Ok(())
 }
@@ -90,20 +112,17 @@ async fn render_rbac(format: OutputFormat) -> Result<(), AdminError> {
                 );
             }
         }
-        OutputFormat::Json => {
-            println!(
-                "{}",
-                serde_json::to_string_pretty(&(users, grants)).expect("json output")
-            );
-        }
+        OutputFormat::Json => println!(
+            "{}",
+            serde_json::to_string_pretty(&(users, grants)).expect("json output")
+        ),
         OutputFormat::Markdown => render_rbac_markdown(&users, &grants),
     }
     Ok(())
 }
 
 fn render_rbac_markdown(users: &[UserAccount], grants: &[RoleGrant]) {
-    println!("# RBAC Snapshot");
-    println!();
+    println!("# RBAC Snapshot\n");
     println!("## Users");
     println!("| name | default role | disabled |");
     println!("| --- | --- | --- |");
@@ -115,8 +134,7 @@ fn render_rbac_markdown(users: &[UserAccount], grants: &[RoleGrant]) {
             user.disabled
         );
     }
-    println!();
-    println!("## Grants");
+    println!("\n## Grants");
     println!("| role | object | privilege |");
     println!("| --- | --- | --- |");
     for grant in grants {
@@ -140,20 +158,17 @@ async fn render_security(format: OutputFormat) -> Result<(), AdminError> {
                 );
             }
         }
-        OutputFormat::Json => {
-            println!(
-                "{}",
-                serde_json::to_string_pretty(&findings).expect("json output")
-            );
-        }
+        OutputFormat::Json => println!(
+            "{}",
+            serde_json::to_string_pretty(&findings).expect("json output")
+        ),
         OutputFormat::Markdown => render_security_markdown(&findings),
     }
     Ok(())
 }
 
 fn render_security_markdown(findings: &[SecurityFinding]) {
-    println!("# Security Audit");
-    println!();
+    println!("# Security Audit\n");
     println!("| severity | title | detail |");
     println!("| --- | --- | --- |");
     for finding in findings {
@@ -179,20 +194,17 @@ async fn render_warehouse(format: OutputFormat) -> Result<(), AdminError> {
                 );
             }
         }
-        OutputFormat::Json => {
-            println!(
-                "{}",
-                serde_json::to_string_pretty(&warehouses).expect("json output")
-            );
-        }
+        OutputFormat::Json => println!(
+            "{}",
+            serde_json::to_string_pretty(&warehouses).expect("json output")
+        ),
         OutputFormat::Markdown => render_warehouse_markdown(&warehouses),
     }
     Ok(())
 }
 
 fn render_warehouse_markdown(warehouses: &[WarehouseHealth]) {
-    println!("# Warehouse Health");
-    println!();
+    println!("# Warehouse Health\n");
     println!("| warehouse | size | running | auto suspend secs | auto resume |");
     println!("| --- | --- | --- | ---: | --- |");
     for warehouse in warehouses {
@@ -208,4 +220,49 @@ fn render_warehouse_markdown(warehouses: &[WarehouseHealth]) {
             warehouse.auto_resume
         );
     }
+}
+
+fn render_ai_vector_demo(query: &str, top: usize, format: OutputFormat) -> Result<(), AdminError> {
+    let query_vec = parse_query(query)?;
+    let docs = sample_vector_documents();
+    let matches = vector_similarity_search(&query_vec, &docs, top);
+    match format {
+        OutputFormat::Text => {
+            for item in matches {
+                println!(
+                    "id={} brand={} city={} similarity={:.3} topic={}",
+                    item.id, item.brand, item.city, item.similarity, item.topic
+                );
+            }
+        }
+        OutputFormat::Json => println!(
+            "{}",
+            serde_json::to_string_pretty(&matches).expect("json output")
+        ),
+        OutputFormat::Markdown => render_ai_markdown(&matches),
+    }
+    Ok(())
+}
+
+fn render_ai_markdown(items: &[VectorMatch]) {
+    println!("# AI Vector Demo\n");
+    println!("| id | brand | city | similarity | topic |");
+    println!("| --- | --- | --- | ---: | --- |");
+    for item in items {
+        println!(
+            "| {} | {} | {} | {:.3} | {} |",
+            item.id, item.brand, item.city, item.similarity, item.topic
+        );
+    }
+}
+
+fn parse_query(query: &str) -> Result<Vec<f32>, AdminError> {
+    query
+        .split(',')
+        .map(|part| {
+            part.trim().parse::<f32>().map_err(|e| {
+                AdminError::Databend(format!("invalid vector query value '{part}': {e}"))
+            })
+        })
+        .collect()
 }

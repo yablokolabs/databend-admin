@@ -1,4 +1,4 @@
-use databend_driver::{Client, Connection, Row, Value};
+use databend_driver::{Client, Connection, Value};
 use serde::{Deserialize, Serialize};
 use std::env;
 use thiserror::Error;
@@ -31,6 +31,25 @@ pub struct SecurityFinding {
     pub severity: Severity,
     pub title: String,
     pub detail: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct VectorDocument {
+    pub id: String,
+    pub region: String,
+    pub brand: String,
+    pub city: String,
+    pub topic: String,
+    pub embedding: Vec<f32>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct VectorMatch {
+    pub id: String,
+    pub brand: String,
+    pub city: String,
+    pub topic: String,
+    pub similarity: f32,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -139,6 +158,64 @@ pub fn run_security_audit(users: &[UserAccount], grants: &[RoleGrant]) -> Vec<Se
     findings
 }
 
+pub fn sample_vector_documents() -> Vec<VectorDocument> {
+    vec![
+        VectorDocument {
+            id: "doc-eu-bmw-berlin-001".to_string(),
+            region: "europe".to_string(),
+            brand: "bmw".to_string(),
+            city: "berlin".to_string(),
+            topic: "dealer incentive policy".to_string(),
+            embedding: vec![0.92, 0.12, 0.41, 0.22],
+        },
+        VectorDocument {
+            id: "doc-eu-volvo-stockholm-001".to_string(),
+            region: "europe".to_string(),
+            brand: "volvo".to_string(),
+            city: "stockholm".to_string(),
+            topic: "ev safety messaging".to_string(),
+            embedding: vec![0.84, 0.18, 0.36, 0.33],
+        },
+        VectorDocument {
+            id: "doc-eu-lamborghini-milan-001".to_string(),
+            region: "europe".to_string(),
+            brand: "lamborghini".to_string(),
+            city: "milan".to_string(),
+            topic: "premium brand launch playbook".to_string(),
+            embedding: vec![0.79, 0.27, 0.51, 0.44],
+        },
+        VectorDocument {
+            id: "doc-na-audi-newyork-001".to_string(),
+            region: "north-america".to_string(),
+            brand: "audi".to_string(),
+            city: "new-york".to_string(),
+            topic: "dealer performance support".to_string(),
+            embedding: vec![0.71, 0.22, 0.49, 0.31],
+        },
+    ]
+}
+
+pub fn vector_similarity_search(
+    query: &[f32],
+    docs: &[VectorDocument],
+    top_k: usize,
+) -> Vec<VectorMatch> {
+    let mut matches: Vec<_> = docs
+        .iter()
+        .map(|doc| VectorMatch {
+            id: doc.id.clone(),
+            brand: doc.brand.clone(),
+            city: doc.city.clone(),
+            topic: doc.topic.clone(),
+            similarity: cosine_similarity(query, &doc.embedding),
+        })
+        .collect();
+
+    matches.sort_by(|a, b| b.similarity.total_cmp(&a.similarity));
+    matches.truncate(top_k);
+    matches
+}
+
 async fn connect() -> Result<Connection, AdminError> {
     let dsn = env::var("DATABEND_DSN").map_err(|_| AdminError::MissingDsn)?;
     Client::new(dsn)
@@ -168,6 +245,20 @@ fn value_to_u64(value: Option<&Value>) -> Option<u64> {
     value_to_string(value).parse::<u64>().ok()
 }
 
+fn cosine_similarity(a: &[f32], b: &[f32]) -> f32 {
+    if a.len() != b.len() || a.is_empty() {
+        return 0.0;
+    }
+    let dot: f32 = a.iter().zip(b.iter()).map(|(x, y)| x * y).sum();
+    let norm_a: f32 = a.iter().map(|x| x * x).sum::<f32>().sqrt();
+    let norm_b: f32 = b.iter().map(|x| x * x).sum::<f32>().sqrt();
+    if norm_a == 0.0 || norm_b == 0.0 {
+        0.0
+    } else {
+        dot / (norm_a * norm_b)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -186,5 +277,13 @@ mod tests {
         }];
         let findings = run_security_audit(&users, &grants);
         assert!(!findings.is_empty());
+    }
+
+    #[test]
+    fn vector_search_returns_matches() {
+        let docs = sample_vector_documents();
+        let matches = vector_similarity_search(&[0.9, 0.1, 0.4, 0.2], &docs, 2);
+        assert_eq!(matches.len(), 2);
+        assert!(matches[0].similarity >= matches[1].similarity);
     }
 }
