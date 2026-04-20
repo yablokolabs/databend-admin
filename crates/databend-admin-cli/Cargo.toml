@@ -4,10 +4,18 @@ version.workspace = true
 edition.workspace = true
 license.workspace = true
 repository.workspace = true
+description = "Rust CLI for Databend RBAC inventory, security audits, warehouse health, and AI/vector governance demos"
+readme = "../../README.md"
+keywords = ["databend", "cli", "rbac", "security", "governance"]
+categories = ["command-line-utilities", "database"]
+
+[[bin]]
+name = "databend-admin"
+path = "src/main.rs"
 
 [dependencies]
 clap.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true
 tokio.workspace = true
-databend-admin-core = { path = "../databend-admin-core" }
+databend-admin-core = { path = "../databend-admin-core", version = "0.1.0" }

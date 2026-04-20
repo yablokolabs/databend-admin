@@ -14,6 +14,16 @@ Many enterprise data teams, whether they are using Databend, Snowflake, or other
 - warehouse health snapshots
 - CLI-first workflows with JSON and Markdown reporting
 
+## Installation
+For local development:
+```bash
+git clone https://github.com/yablokolabs/databend-admin.git
+cd databend-admin
+cargo run -p databend-admin-cli -- --help
+```
+
+Once the project is mature enough for package publication, it can also be distributed as a Rust CLI crate.
+
 ## Workspace
 - `databend-admin-core`: admin domain types, policy checks, report generation
 - `databend-admin-cli`: CLI entrypoint for inventory and report commands

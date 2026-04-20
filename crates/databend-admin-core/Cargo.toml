@@ -4,6 +4,10 @@ version.workspace = true
 edition.workspace = true
 license.workspace = true
 repository.workspace = true
+description = "Core types and governance logic for Databend admin, RBAC, security, and warehouse visibility workflows"
+readme = "../../README.md"
+keywords = ["databend", "rbac", "security", "governance", "warehouse"]
+categories = ["command-line-utilities", "database"]
 
 [dependencies]
 serde.workspace = true
